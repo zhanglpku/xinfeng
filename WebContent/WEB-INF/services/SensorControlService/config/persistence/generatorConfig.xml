@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+	<classPathEntry
+		location="H:\workspace\xinfeng\xinfeng\WebContent\WEB-INF\lib\mysql-connector-java-5.1.26.jar" />
+
+	<context id="context1" targetRuntime="MyBatis3">
+
+		<commentGenerator>
+			<property name="suppressDate" value="true" /><!-- 是否去除自动生成的注释true：是 ： false:否 -->
+		</commentGenerator>
+
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://localhost:3306/xinfeng" 
+			userId="root"
+			password="root" />
+
+		<!-- 生成模型的包名和位置-->  
+		<javaModelGenerator targetPackage="com.pku.xinfeng.model" targetProject="xinfeng">
+			<property name="enableSubPackages" value="true" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+
+		<!-- 生成映射文件的包名和位置-->  
+		<sqlMapGenerator targetPackage="com.pku.xinfeng.mapping" targetProject="xinfeng">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>
+
+		<!-- 生成DAO的包名和位置-->
+		<javaClientGenerator targetPackage="com.pku.xinfeng.dao" targetProject="xinfeng" type="XMLMAPPER">
+			<property name="enableSubPackages" value="true" />
+		</javaClientGenerator>
+
+
+		<!-- 以下是数据库表格的配置 -->
+		<table tableName="user" domainObjectName="User"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		<table tableName="equipment" domainObjectName="Equipment"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		<table tableName="command" domainObjectName="Command"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		<table tableName="oper_log" domainObjectName="OperLog"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		<table tableName="sensor_data" domainObjectName="SensorData"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		<table tableName="time_set" domainObjectName="TimeSet"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		<table tableName="user_weather" domainObjectName="UserWeather"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		<table tableName="user_equipment" domainObjectName="UserEquipment"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		
+		<table tableName="pm" domainObjectName="Pm"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		<table tableName="temperature" domainObjectName="Temperature"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		<table tableName="city_code" domainObjectName="CityCode"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
+		
+		<table tableName="weather" domainObjectName="Weather">
+			<property name="useActualColumnNames" value="true" />
+		</table>
+		
+	</context>
+</generatorConfiguration>

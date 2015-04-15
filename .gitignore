@@ -1,0 +1,6 @@
+/build/
+
+/WebContent/WEB_INF/classes
+/WebContent/WEB_INF/lib
+/WebContent/WEB_INF/modules
+/WebContent/WEB_INF/services
