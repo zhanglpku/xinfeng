@@ -290,4 +290,12 @@
       update_date = #{update_date,jdbcType=TIMESTAMP}
     where user_id = #{user_id,jdbcType=VARCHAR} and equip_id = #{equip_id,jdbcType=VARCHAR}
   </update>
+  
+  <select id="getUserDetail" resultType="java.util.HashMap">
+    select m.*,u.username,u.phone from (
+    	select p.user_id,p.equip_name,e.id as equip_id,e.max_airflow,e.version,e.code,e.repair_date,e.filter_date 
+    	from user_equipment p,equipment e where p.equip_id=e.id
+    	) m,user u 
+    where m.user_id=u.id;
+  </select>
 </mapper>

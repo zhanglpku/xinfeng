@@ -12,8 +12,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 public class Export {
 	//Excel导出的实现
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static HSSFWorkbook getHSSFWorkbook(List<HashMap> list,String sheetName,String[] cellHeader,String[] cellAttr) {
+	public static HSSFWorkbook getHSSFWorkbook(List<HashMap<String, Object>> list,String sheetName,String[] cellHeader,String[] cellAttr) {
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		HSSFSheet sheet = workbook.createSheet(sheetName);
 		
@@ -25,7 +24,7 @@ public class Export {
 		}
 		if(null!= list && list.size()>0){
 			for (int i = 0; i < list.size(); i++) {
-				HashMap<Object, Object> map = list.get(i);
+				HashMap<String, Object> map = list.get(i);
 				HSSFRow dataRow = sheet.createRow(i + 1);// 创建其他各数据行
 				for (int j = 0; j < cellAttr.length; j++) {
 					HSSFCell cell = dataRow.createCell((short) j);

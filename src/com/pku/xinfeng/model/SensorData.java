@@ -287,7 +287,10 @@ public class SensorData {
 	private Date install_date;
 	private Date repair_date;
 	private Date filter_date;
-	private Date ymDate;//年月�?
+	private Date ymDate;//年月�?
+	private String code;
+	private String version;
+	private String commands;
 
 	public Integer getMax_airflow() {
 		return max_airflow;
@@ -343,5 +346,29 @@ public class SensorData {
 
 	public void setFilter_date(Date filter_date) {
 		this.filter_date = filter_date;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getCommands() {
+		return commands;
+	}
+
+	public void setCommands(String commands) {
+		this.commands = commands;
 	}
 }

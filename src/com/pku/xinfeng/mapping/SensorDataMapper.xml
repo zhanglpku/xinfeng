@@ -380,12 +380,12 @@
   </update>
 
 	<select id="getEquipSensorListByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
-		select p.id as equip_id,p.equip_name,p.max_airflow,p.factory_date,p.install_date,p.repair_date,p.filter_date,
+		select p.id as equip_id,p.equip_name,p.max_airflow,p.version,p.commands,p.code,p.factory_date,p.install_date,p.repair_date,p.filter_date,
 		r.pm25,r.pm10,r.co2,r.voc,r.methanol,r.temperature,r.humidity,r.strainer
 		from (
-			select e.id,p.equip_name,e.max_airflow,e.factory_date,e.install_date,e.repair_date,e.filter_date
-			from equipment e left join user_equipment p
-			on e.id=p.equip_id
+			select e.id,p.equip_name,e.max_airflow,e.version,e.code,e.factory_date,e.install_date,e.repair_date,e.filter_date,e.commands
+			from (select m.*,v.commands from equipment m,version v where m.version=v.version) e 
+			left join user_equipment p on e.id=p.equip_id
 			where p.user_id=#{userId,jdbcType=VARCHAR}
 		) p left join (
 			select

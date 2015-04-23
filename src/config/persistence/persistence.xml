@@ -116,6 +116,10 @@ http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
 		<property name="mapperInterface" value="com.pku.xinfeng.dao.TemperatureMapper" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	<bean id="versionMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="com.pku.xinfeng.dao.VersionMapper" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>
 
 

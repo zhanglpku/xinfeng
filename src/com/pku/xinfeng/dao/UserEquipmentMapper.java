@@ -1,12 +1,13 @@
 package com.pku.xinfeng.dao;
 
-import com.pku.xinfeng.model.UserEquipment;
-import com.pku.xinfeng.model.UserEquipmentExample;
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+
+import com.pku.xinfeng.model.UserEquipment;
+import com.pku.xinfeng.model.UserEquipmentExample;
 
 public interface UserEquipmentMapper {
 
@@ -79,4 +80,6 @@ public interface UserEquipmentMapper {
 	int updateByPrimaryKey(UserEquipment record);
 
 	int updateEquipName(Map<String, Object> map);
+	
+	List<HashMap<String,Object>> getUserDetail();
 }

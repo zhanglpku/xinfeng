@@ -20,7 +20,5 @@ public interface UserService {
 	public int modifyUserById(User user);
 	public User selectByUidAndPsw(String userId,String password);
 	
-	public List<com.pku.xinfeng.pojo.UserDetail> getUserEquipList();
-	
 	String getTimeStatus(String equipId);
 }

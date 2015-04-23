@@ -1,7 +1,9 @@
 package com.pku.xinfeng.controller;
 
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,15 +20,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.pku.xinfeng.model.OperLog;
+import com.pku.xinfeng.model.SensorData;
 import com.pku.xinfeng.model.User;
-import com.pku.xinfeng.pojo.UserDetail;
+import com.pku.xinfeng.model.Version;
 import com.pku.xinfeng.service.OperLogService;
+import com.pku.xinfeng.service.SysService;
 import com.pku.xinfeng.service.UserService;
+import com.pku.xinfeng.utils.CommonUtil;
 import com.pku.xinfeng.utils.Constant;
 import com.pku.xinfeng.utils.DateUtil;
-import com.pku.xinfeng.utils.Export;
+import com.pku.xinfeng.utils.ExplortExcel;
 import com.pku.xinfeng.utils.StringUtil;
 
 @Controller
@@ -40,7 +46,19 @@ public class SysController {
 	
 	@Autowired
 	private OperLogService operLogService;
+	
+	@Autowired
+	private SysService sysService;
 
+	@SuppressWarnings("unused")
+	private void setResponseHeader(HttpServletResponse response, String fileName) throws Exception {
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(fileName, "UTF-8") + "\"");
+		response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+		response.setHeader("Pragma", "public");
+		response.setDateHeader("Expires", 0);
+	}
+	
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	public String login(HttpServletRequest request, HttpServletResponse response) {
 		System.out.println("-------syslogin-------------");
@@ -71,6 +89,12 @@ public class SysController {
 		} catch (Exception e) {
 			logger.error(e.toString(), e);
 		}
+		return "redirect:/sys/index.jsp";
+	}
+	
+	@RequestMapping(value = "logout", method = RequestMethod.GET)
+	public String logout(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		request.getSession().invalidate();
 		return "redirect:/sys/index.jsp";
 	}
 	
@@ -114,79 +138,223 @@ public class SysController {
 		response.getWriter().println(resultJson.toString());
     }
 	
-	@RequestMapping(value = "getUserEquipList", method = RequestMethod.POST)
-    public void getUserEquipList(HttpServletRequest request, HttpServletResponse response) throws Exception{
+	@RequestMapping(value = "deleteVersion", method = RequestMethod.POST)
+    public void deleteVersion(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		System.out.println("$$$$--deleteVersion----$$$$$$$");
+		String id = request.getParameter("id");
 		
-		List<UserDetail> list = userService.getUserEquipList();
+		if (StringUtil.isEmpty(id)) {
+			CommonUtil.returnFalse(response);
+			return;
+		}
+		JSONObject resultJson = new JSONObject();
+		List<HashMap<String,Object>> list = sysService.getListByVersion(Integer.parseInt(id));
+		if(null == list || list.size() == 0){
+			Version obj = sysService.deleteVersion(Integer.parseInt(id));
+			
+			if(null != obj){
+				resultJson.put("state", true);
+				resultJson.put("description", "删除成功！");
+			}else{
+				resultJson.put("state", false);
+				resultJson.put("description", "删除失败！");
+			}
+		}else{
+			resultJson.put("state", false);
+			resultJson.put("description", "该型号已经添加设备，无法删除！");
+		}
 		
-		List<HashMap<String,Object>> sessionList = new ArrayList<HashMap<String,Object>>();
+		
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().println(resultJson.toString());
+    }
+	
+	@RequestMapping(value = "addVersion", method = RequestMethod.POST)
+    public void addVersion(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		System.out.println("$$$$--addVersion----$$$$$$$");
+		String version = request.getParameter("version");
+		String commands = request.getParameter("commands");
+		
+		if (StringUtil.isEmpty(version) || StringUtil.isEmpty(commands)) {
+			CommonUtil.returnFalse(response);
+			return;
+		}
+		
+		Version obj = new Version();
+		obj.setVersion(version);
+		obj.setCommands(commands);
+		obj.setUpdate_date(new Date());
+		boolean flag = sysService.addVersion(obj);
 		
 		JSONObject resultJson = new JSONObject();
-		if(null != list && list.size() > 0){
+		if(flag){
 			resultJson.put("state", true);
-			resultJson.put("description", "查询成功！");
-			
-			JSONArray jsonArray = new JSONArray();
-			for (int i=0; i < list.size(); i++) {
-				UserDetail obj = list.get(i);
-				
-				JSONObject jsonObj = new JSONObject();
-				jsonObj.put("userId", obj.getUserId());
-				jsonObj.put("userName", obj.getUserName());
-				jsonObj.put("phone", obj.getPhone());
-				jsonObj.put("equipId", obj.getEquipId());
-				jsonObj.put("equipName", obj.getEquipName());
-				jsonObj.put("repairDate", DateUtil.formatDate(obj.getRepairDate()));
-				jsonObj.put("filterDate", DateUtil.formatDate(obj.getFilterDate()));
-				jsonArray.add(jsonObj);
-			     
-				HashMap<String,Object> map = new HashMap<String,Object>();
-				map.put("order", i+1);
-				map.put("userId", obj.getUserId());
-				map.put("userName", obj.getUserName());
-				map.put("phone", obj.getPhone());
-				map.put("equipId", obj.getEquipId());
-				map.put("equipName", obj.getEquipName());
-				map.put("repairDate", DateUtil.formatDate(obj.getRepairDate()));
-				map.put("filterDate", DateUtil.formatDate(obj.getFilterDate()));
-				sessionList.add(map);
-			 }
-			resultJson.put("list", jsonArray);
-			request.getSession().setAttribute(Constant.SESSION_USER_DETAIL, jsonArray);
+			resultJson.put("description", "保存成功！");
+		}else{
+			resultJson.put("state", false);
+			resultJson.put("description", "保存失败！");
 		}
 		
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().println(resultJson.toString());
     }
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@RequestMapping(value = "exportLogList", method = RequestMethod.POST)
+	@RequestMapping(value = "getVersion", method = RequestMethod.POST)
+    public void getVersion(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		System.out.println("$$$$--getVersion----$$$$$$$");
+		
+		List<Version> list = sysService.getVersionList();
+		
+		JSONObject resultJson = new JSONObject();
+		if(null != list && list.size() > 0){
+			resultJson.put("state", true);
+			resultJson.put("description", "查询成功！");
+			JSONArray jsonArray = new JSONArray();
+			for (Version obj: list) {
+			     JSONObject jsonObj = new JSONObject();
+			     jsonObj.put("id", obj.getId());
+				 jsonObj.put("version", obj.getVersion());
+				 String commands = obj.getCommands();
+				 if(!StringUtil.isEmpty(commands)){
+					 String[] ary = commands.split(",");
+					 int len = ary.length;
+					 commands = "";
+					 for(int i=0; i<len;i++){
+						 if(Constant.CONSTANT_COMMAND_MODEL.equals(ary[i])){
+							 commands += "自动手动";
+						 }else if(Constant.CONSTANT_COMMAND_AIRLOOP.equals(ary[i])){
+							 commands += "内外循环";
+						 }else if(Constant.CONSTANT_COMMAND_SLEEP.equals(ary[i])){
+							 commands += "睡眠";
+						 }else if(Constant.CONSTANT_COMMAND_HEAT.equals(ary[i])){
+							 commands += "加热";
+						 }else if(Constant.CONSTANT_COMMAND_STATICELECTRICITY.equals(ary[i])){
+							 commands += "静电";
+						 }else if(Constant.CONSTANT_COMMAND_TIME.equals(ary[i])){
+							 commands += "定时";
+						 }else if(Constant.CONSTANT_COMMAND_ONOROFF.equals(ary[i])){
+							 commands += "电源开关";
+						 }
+						 if(i < len-1)
+							 commands += "，";
+					 }
+				 }
+				 jsonObj.put("commands", commands);
+			     jsonArray.add(jsonObj);
+			 }
+			resultJson.put("list", jsonArray);
+		}
+		
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().println(resultJson.toString());
+    }
+	@RequestMapping(value = "modifySysPassword", method = RequestMethod.POST)
+	@ResponseBody
+	public void modifySysPassword(HttpServletRequest request,
+			HttpServletResponse response) {
+		User sessionUser = (User) request.getSession().getAttribute(Constant.SESSION_USER);
+    	
+		String oldPassword = request.getParameter("oldPassword");
+		String newPassword = request.getParameter("newPassword");
+
+		System.out.println("--------modifySysPassword-------- ");
+		System.out.println("oldPassword : " + oldPassword);
+		System.out.println("newPassword : " + newPassword);
+
+		if (StringUtil.isEmpty(oldPassword)
+				|| StringUtil.isEmpty(newPassword)) {
+			CommonUtil.returnFalse(response);
+			return;
+		}
+		try {
+			JSONObject jsonObj = new JSONObject();
+			String userId = sessionUser.getId();
+			User checkUser = userService.selectByUidAndPsw(userId, StringUtil.MD5Encode(oldPassword));
+			if(null != checkUser && !StringUtil.isEmpty(checkUser.getId())){//验证用户
+				User user = new User();
+				user.setId(userId);
+				user.setPassword(StringUtil.MD5Encode(newPassword));
+				int f = userService.modifyUserById(user);
+				if(f > 0){
+					jsonObj.put("state", true);
+					jsonObj.put("description", "更新成功！");
+				}else{
+					jsonObj.put("state", false);
+					jsonObj.put("description", "更新失败！");
+				}
+			}else{
+				jsonObj.put("state", false);
+				jsonObj.put("description", "旧密码错误！");
+			}
+				
+			response.setContentType("application/json;charset=UTF-8");
+			response.getWriter().println(jsonObj.toString());
+		} catch (Exception e) {
+			logger.error(e.toString(), e);
+		}
+	}
+	
+	@RequestMapping(value = "exportUserDetailList", method = RequestMethod.POST)
     public void exportUserDetailList(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		List<HashMap> list = (List<HashMap>) request.getSession().getAttribute(Constant.SESSION_USER_DETAIL);
+		System.out.println("$$$$--exportUserDetailList----$$$$$$$");
+		List<HashMap<String, Object>> list = sysService.getUserEquipList();
+		if(null == list)
+			list = new ArrayList<HashMap<String, Object>>();
 		
 		String[] cellAttr = Constant.Excel_User_colu;// 字段
 		String[] cellHeader = Constant.Excel_User_value;// 表头
-		String sheetName = "countBfJjYear";
 		
 		HSSFWorkbook workbook = new HSSFWorkbook();
-		workbook = Export.getHSSFWorkbook(list, sheetName,cellHeader, cellAttr);
-		
-		try {
-			response.setCharacterEncoding("UTF-8");   
-
-			setResponseHeader(response, sheetName + ".xls");
-			workbook.write(response.getOutputStream());
-			response.getOutputStream().flush();
-			response.getOutputStream().close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	private void setResponseHeader(HttpServletResponse response, String fileName) throws Exception {
-		response.setContentType("application/vnd.ms-excel");
-		response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(fileName, "UTF-8") + "\"");
-		response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
-		response.setHeader("Pragma", "public");
+		workbook = ExplortExcel.creatWorkbookMap(list, "用户详细信息",cellHeader, cellAttr);
+		response.setHeader("Content-Type","application/vnd.ms-excel");
+		response.setHeader("Pragma", "No-cache");  
+		response.setHeader("Cache-Control", "No-cache");  
 		response.setDateHeader("Expires", 0);
+        response.setHeader("Content-Disposition", "attachment;filename=userInfoDetail.xls");  
+        OutputStream ouputStream = response.getOutputStream();  
+        workbook.write(ouputStream);  
+        ouputStream.flush();  
+        ouputStream.close();  
+	}
+	
+	@RequestMapping(value = "exportEquipSensorDatas", method = RequestMethod.POST)
+    public void exportEquipSensorDatas(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		System.out.println("$$$$--exportEquipSensorDatas----$$$$$$$");
+		List<SensorData> list = sysService.getEquipSensorDatas();
+		if(null == list)
+			list = new ArrayList<SensorData>();
+		
+		List<HashMap<String, Object>> mapList = new ArrayList<HashMap<String, Object>>();
+		for(int i=0; i<list.size(); i++){
+			SensorData obj = list.get(i);
+			
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("equipId", obj.getEquip_id());
+			map.put("pm25", obj.getPm25());
+			map.put("pm10", obj.getPm10());
+			map.put("co2", obj.getCo2());
+			map.put("voc", obj.getVoc());
+			map.put("methanol", obj.getMethanol());
+			map.put("temperature", obj.getTemperature());
+			map.put("humidity", obj.getHumidity());
+			map.put("strainer", obj.getStrainer());
+			map.put("update_date", DateUtil.formatDateTime(obj.getUpdate_date()));
+			mapList.add(map);
+		}
+		
+		String[] cellAttr = Constant.Excel_EQUIP_colu;// 字段
+		String[] cellHeader = Constant.Excel_EQUIP_value;// 表头
+		
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		workbook = ExplortExcel.creatWorkbookMap(mapList, "设备传感器信息",cellHeader, cellAttr);
+		response.setHeader("Content-Type","application/vnd.ms-excel");
+		response.setHeader("Pragma", "No-cache");  
+		response.setHeader("Cache-Control", "No-cache");  
+		response.setDateHeader("Expires", 0);
+        response.setHeader("Content-Disposition", "attachment;filename=equipSensorDatas.xls");  
+        OutputStream ouputStream = response.getOutputStream();  
+        workbook.write(ouputStream);  
+        ouputStream.flush();  
+        ouputStream.close();  
 	}
 }

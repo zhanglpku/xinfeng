@@ -34,8 +34,6 @@ public class DataCacheMap {
 			commandMap.put(Constant.CONSTANT_COMMAND_SLEEP, StringUtil.toBoolean(command)+"");
 		}else if(Constant.CONSTANT_COMMAND_HEAT.equals(type)){
 			commandMap.put(Constant.CONSTANT_COMMAND_HEAT, StringUtil.toBoolean(command)+"");
-		}else if(Constant.CONSTANT_COMMAND_DISINFECTION.equals(type)){
-			commandMap.put(Constant.CONSTANT_COMMAND_DISINFECTION, StringUtil.toBoolean(command)+"");
 		}else if(Constant.CONSTANT_COMMAND_MODEL.equals(type)){
 			commandMap.put(Constant.CONSTANT_COMMAND_MODEL, StringUtil.toBoolean(command)+"");
 		}else if(Constant.CONSTANT_COMMAND_AIRLOOP.equals(type)){

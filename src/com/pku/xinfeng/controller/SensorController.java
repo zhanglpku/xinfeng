@@ -61,16 +61,26 @@ public class SensorController {
         		equipJson.put("equipId", obj.getEquip_id());
         		equipJson.put("equipName", obj.getEquip_name());
         		equipJson.put("maxAirflow", obj.getMax_airflow());
+        		equipJson.put("code", obj.getCode());
+        		equipJson.put("version", obj.getVersion());
+        		equipJson.put("versionCommands",obj.getCommands());
         		equipJson.put("repairDate", null == obj.getRepair_date()?"":DateUtil.formatDate(obj.getRepair_date()));
         		equipJson.put("filterDate", null == obj.getFilter_date()?"":DateUtil.formatDate(obj.getFilter_date()));
         		equipJson.put("installDate", null == obj.getInstall_date()?"":DateUtil.formatDate(obj.getInstall_date()));
         		equipJson.put("factoryDate", null == obj.getFactory_date()?"":DateUtil.formatDate(obj.getFactory_date()));
+        		//表示app要显示哪些传感器数据，因为现在没说传感器要随型号而变，故写死。
+        		equipJson.put("sensorType","pm25,co2,methanol,temperature,humidity");
         		
         		JSONObject warningJson = new JSONObject();
-        		if(null != obj.getStrainer())
-        			warningJson.put("strainer", Integer.parseInt(obj.getStrainer()));
-        		else
-        			warningJson.put("strainer", 0);//默认0：正常
+        		if(null != obj.getStrainer()){
+        			int stra = Integer.parseInt(obj.getStrainer());
+        			if(0 == stra)
+        				warningJson.put("strainer", "");//正常，不用提示
+        			else if(0 != (stra & 0x01))
+        				warningJson.put("strainer", "过滤网更换预警");
+        			else if(0 != (stra & 0x02))
+        				warningJson.put("strainer", "过滤网及时更换");
+        		}
         		equipJson.put("warning",warningJson );
         		//sensor
         		JSONObject sensorJson = new JSONObject();

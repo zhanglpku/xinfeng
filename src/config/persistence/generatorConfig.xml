@@ -100,6 +100,12 @@
 			<generatedKey column="id" sqlStatement="MySql"
 				identity="true" />  <!-- 插入后返回id -->
 		</table>
+		<table tableName="version" domainObjectName="Version"
+			enableSelectByPrimaryKey="true" enableDeleteByPrimaryKey="true">
+			<property name="useActualColumnNames" value="true" />
+			<generatedKey column="id" sqlStatement="MySql"
+				identity="true" />  <!-- 插入后返回id -->
+		</table>
 		
 		<table tableName="weather" domainObjectName="Weather">
 			<property name="useActualColumnNames" value="true" />

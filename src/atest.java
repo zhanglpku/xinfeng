@@ -1,13 +1,11 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Field;
 
-import com.pku.xinfeng.model.Command;
-import com.pku.xinfeng.utils.StringUtil;
+import com.pku.xinfeng.model.SensorData;
 
 
 public class atest {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException {
 		// TODO Auto-generated method stub
 //		System.out.println(new Date());
 //		System.out.println(DateUtil.getWeekOfDate(new Date()));
@@ -97,12 +95,21 @@ public class atest {
 //		System.out.println(((Command)map.get("123")).getCommand());
 		
 		
-		String s = "99";
-		byte[] b = new byte[3];
-		b[0] = (byte) Integer.parseInt(s);
-		System.out.println(b[0]);
-		System.out.println(Integer.toHexString((Integer.parseInt(s))));
-		System.out.println(Integer.toBinaryString((Integer.parseInt(s))));
+//		String s = "99";
+//		byte[] b = new byte[3];
+//		b[0] = (byte) Integer.parseInt(s);
+//		System.out.println(b[0]);
+//		System.out.println(Integer.toHexString((Integer.parseInt(s))));
+//		System.out.println(Integer.toBinaryString((Integer.parseInt(s))));
+		
+		Object e = new SensorData();
+		Class cls = e.getClass();  
+        Field[] fields = cls.getDeclaredFields();  
+        for(int i=0; i<fields.length; i++){  
+            Field f = fields[i];  
+            f.setAccessible(true);  
+            System.out.println("属性名:" + f.getName() + " 属性值:" + f.get(e));  
+        }   
 		
 	}
 

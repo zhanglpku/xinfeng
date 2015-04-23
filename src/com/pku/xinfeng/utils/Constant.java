@@ -12,7 +12,6 @@ public class Constant {
 	public final static String CONSTANT_COMMAND_HEAT = "heat";//加热
 	public final static String CONSTANT_COMMAND_STATICELECTRICITY = "staticElectricity";//静电
 	public final static String CONSTANT_COMMAND_DISINFECTION = "disinfection";//杀菌
-	public final static String CONSTANT_COMMAND_ANION = "anion";//负离子
 	
 	public final static String CONSTANT_COMMAND_AIRFLOW = "airflow";//风量
 	public final static String CONSTANT_COMMAND_AIRFLOWPERCENT = "airflowPercent";//风量百分比
@@ -35,17 +34,23 @@ public class Constant {
 	public final static String OPER_TYPE_COMMON = "common";
 	public final static String OPER_TYPE_AUTO = "auto";
 	
-	//系统管理-用户详细信息查询
-	public final static String SESSION_USER_DETAIL = "user_detail";
 	//excel 字段
-	public static final String[] Excel_User_colu = {"order", "userName", "phone",
-												"equipId", "equipName", "repairDate","filterDate"};
+	public static final String[] Excel_User_colu = {"username", "phone","equip_id", "equip_name", 
+											"repair_date","filter_date","max_airflow","version","code"};
 	//excel  表头名称
-	public static final String[] Excel_User_value =  { "序号", "用户名", "电话", "设备ID", "设备名", 
-												"设备维修时间", "滤网更换时间"};
+	public static final String[] Excel_User_value =  {"用户名", "电话", "设备ID", "设备名", 
+												"设备维修时间", "滤网更换时间", "最大风量", "型号", "生产编码"};
 
+	//excel 字段
+	public static final String[] Excel_EQUIP_colu = {"equipId", "pm25", 
+											"pm10","co2","voc","methanol","temperature"
+											,"humidity","strainer","update_date"};
+	//excel  表头名称
+	public static final String[] Excel_EQUIP_value =  {"设备ID", "pm2.5", 
+													"pm10", "co2", "voc", "甲醛", "温度"
+													,"湿度","过滤网状态(0正常，1更换预警，2及时更换)","更新时间"};
 
-	//
+	//缓存中标志位
 	public final static String COMMAND_CHANGE_FLAG = "command_change_flag";
 	public final static String COMMAND_CHANGE_FLAG_APP = "true";
 }

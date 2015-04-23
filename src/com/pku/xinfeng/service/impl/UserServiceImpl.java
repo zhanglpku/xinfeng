@@ -142,12 +142,6 @@ public class UserServiceImpl implements UserService {
 		return user;
 	}
 	
-	@Override
-	public List<com.pku.xinfeng.pojo.UserDetail> getUserEquipList() {
-		// TODO Auto-generated method stub
-		return null;//userMapper.getUserEquipList();
-	}
-	
 	public String getTimeStatus(String equipId){
 		String returnStr = "";
 		//查询出此设备的所有定时信息
